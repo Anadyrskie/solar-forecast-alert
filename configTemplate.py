@@ -1,4 +1,7 @@
 # designed for forecast.solar api
+
+# script currently imports config.py
+
 solar_forecast = {
     "api_key" : "",
     "lat" : "",
