@@ -1,3 +1,5 @@
+# designed for forecast.solar api
+
 import requests
 from config import *
 from twilio.rest import Client
