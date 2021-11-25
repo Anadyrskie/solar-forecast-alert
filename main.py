@@ -3,7 +3,7 @@
 import requests
 from config import *
 from twilio.rest import Client
-
+from datetime import datetime
 
 def main():
     json = get_JSON(solar_forecast["url"])
@@ -12,8 +12,8 @@ def main():
         message = ("Warning, the following day(s) may have low (<" +
                    str(solar_forecast["watts_required"]) +
                    "Wh) solar harvest:\n" + message)
-        print(message)
-        send_sms(message, twilio_config)
+        print(now() + ": " + message)
+        # send_sms(message, twilio_config)
     else:
         exit(0)
 
@@ -44,5 +44,9 @@ def send_sms(message, twilio):
             body=message)
         # print(sms.sid)
 
+def now():
+    # datetime object containing current date and time
+    now = datetime.now()
+    return now.strftime("%H:%M %Y-%m-%d")
 
 main()
