@@ -13,7 +13,7 @@ def main():
                    str(solar_forecast["watts_required"]) +
                    "Wh) solar harvest:\n" + message)
         print(now() + ": " + message)
-        # send_sms(message, twilio_config)
+        send_sms(message, twilio_config)
     else:
         exit(0)
 
