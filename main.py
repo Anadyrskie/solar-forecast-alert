@@ -1,21 +1,27 @@
 # designed for forecast.solar api
 
 import requests
+import sys
 from config import *
 from twilio.rest import Client
 from datetime import datetime
+from time import tzname
 
 def main():
-    json = get_JSON(solar_forecast["url"])
-    message = parse_JSON(json, solar_forecast["watts_required"])
-    if message != "":
-        message = ("Warning, the following day(s) may have low (<" +
-                   str(solar_forecast["watts_required"]) +
-                   "Wh) solar harvest:\n" + message)
-        print(now() + ": " + message)
-        send_sms(message, twilio_config)
-    else:
-        exit(0)
+    try:
+        json = get_JSON(solar_forecast["url"])
+        message = parse_JSON(json, solar_forecast["watts_required"])
+        if message != "":
+            message = ("Warning, the following day(s) may have low (<" +
+                       str(solar_forecast["watts_required"]) +
+                       "Wh) solar harvest:\n" + message)
+            print(now() + ": " + message)
+            send_sms(message, twilio_config)
+            sys.exit(0)
+    except Exception as e:
+        try: print(now() + str(e))
+        except Exception as e2:
+            print(e2)
 
 
 def get_JSON(url):
@@ -31,7 +37,7 @@ def parse_JSON(json, watts_required):
                 message = message + day + ": " + str(json["result"]["watt_hours_day"][day]) + "Wh" +"\n"
     except TypeError as err:
         print("parse_JSON TypeError: " + str(err))
-        exit(1)
+        sys.exit(0)
     return message
 
 def send_sms(message, twilio):
@@ -47,6 +53,7 @@ def send_sms(message, twilio):
 def now():
     # datetime object containing current date and time
     now = datetime.now()
-    return now.strftime("%H:%M %Y-%m-%d")
+    return now.strftime("%H:%M" + tzname[0] + " %Y-%m-%d")
+
 
 main()
