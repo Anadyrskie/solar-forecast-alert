@@ -8,16 +8,23 @@ from datetime import datetime
 from time import tzname
 
 def main():
+    print(now())
     try:
+        print("Fetching forecast.solar JSON")
         json = get_JSON(solar_forecast["url"])
+        print("Fetched, parsing")
         message = parse_JSON(json, solar_forecast["watts_required"])
+        print("Evaluating")
         if message != "":
             message = ("Warning, the following day(s) may have low (<" +
                        str(solar_forecast["watts_required"]) +
                        "Wh) solar harvest:\n" + message)
-            print(now() + ": " + message)
-            send_sms(message, twilio_config)
-            sys.exit(0)
+            print("Sending message")
+            send_telegram(message, telegram)
+            print("===DONE===\n")
+        else:
+            print("Adequate solar")
+            print("===DONE===\n")
     except Exception as e:
         try: print(now() + str(e))
         except Exception as e2:
@@ -25,13 +32,17 @@ def main():
 
 
 def get_JSON(url):
-    #TODO error handling
     response = requests.get(url)
     return response.json()
+
+def post(url, body):
+    response = requests.post(url, body)
+    return response
 
 def parse_JSON(json, watts_required):
     message = ""
     try:
+        #iterates through forecast JSON
         for day in json["result"]["watt_hours_day"]:
             if json["result"]["watt_hours_day"][day] < watts_required:
                 message = message + day + ": " + str(json["result"]["watt_hours_day"][day]) + "Wh" +"\n"
@@ -40,20 +51,24 @@ def parse_JSON(json, watts_required):
         sys.exit(0)
     return message
 
-def send_sms(message, twilio):
-    #TODO error handling
-    client = Client(twilio_config["account_sid"], twilio_config["auth_token"])
-    for phone in twilio["to"]:
-        sms = client.messages.create(
-            to=phone,
-            from_=twilio["from"],
-            body=message)
-        # print(sms.sid)
+def send_telegram(message, telegram):
+    url = "https://api.telegram.org/bot" + telegram["api_key"] + "/sendMessage"
+    #requests sends dict as urlencoded
+    body = {
+        "chat_id":  telegram['chat_id'],
+        "text"   :  message
+    }
+    response = post(url, body)
+    json = response.json()
+    #response check
+    if json['ok'] == True: return
+    else:
+        print("send_telegram response: " +json)
+        return
 
 def now():
-    # datetime object containing current date and time
     now = datetime.now()
-    return now.strftime("%H:%M" + tzname[0] + " %Y-%m-%d")
+    return now.strftime("%Y-%m-%d" + " %H:%M" + tzname[0])
 
 
 main()

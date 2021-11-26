@@ -1,5 +1,4 @@
 # designed for forecast.solar api
-
 # script currently imports config.py
 
 solar_forecast = {
@@ -25,12 +24,7 @@ solar_forecast["url"] = ("https://api.forecast.solar/" +
                          )
 # </editor-fold>
 
-twilio_config = {
-    "account_sid":"ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    "auth_token":"your_auth_token",
-    "from":"+15017250604",  #text is sent from this number
-    "to": [
-    "+15558675309",         #recipient 1
-    "+12223331234"          #recipient 2
-    ]
+telegram = {
+    "api_key":  "ZZZZZZZZ:XXXXXXXX", #api key from BotFather
+    "chat_id": "-aaaaaaaaaa"          #chat id of group bot is in
 }
