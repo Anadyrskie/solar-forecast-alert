@@ -1,6 +1,6 @@
-# Solar Forecast SMS
-Simple python script to pull forecast.solar api and send SMS if forecast below a desired value.
+# Solar Forecast Alert
+Simple python script to poll forecast.solar API and send Telegram if forecast below a desired value.
 
-Dependencies: Requests and Twilio
+Requires: Requests
 
-```pip3 install requests twilio```
+```pip3 install requests```
